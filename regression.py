@@ -6,10 +6,19 @@ Created on Sat Sep 25 02:05:10 2021
 """
 
 import numpy as np
+import pandas as pd
+from matplotlib import pyplot as plt
 
-area = np.array([51,38,57,51,53,77,63,69,72,73])
-age = np.array([16,4,16,11,4,22,5,5,2,1])
-price = np.array([3.0,3.2,3.3,3.9,4.4,4.5,4.5,5.4,5.4,6.0])
+def read_data(N):
+    file_input = pd.read_csv(filepath_or_buffer="estate.csv")
+    
+    N = len(file_input)
+    
+    print(file_input)
+    print("N = ",N)
+    
+    return file_input
+
 
 def get_mean(x):
     N = x.size
@@ -66,9 +75,41 @@ def calc_eq(ind1,ind2,target):
         
     return y
 
-if __name__ == '__main__':
-    y = calc_eq(area,age,price)
+def calc_error(y_est,data):
+    N = len(data)
+    ek = np.zeros(N)
+    e = 0
+    Ve = 0
+    y = data['price']
+    
+    for i in range(N):
+        ek[i] = y[i] - y_est[i]
+        e += (y[i] - y_est[i]) ** 2
+        
+    Ve = e / (N - 2)
+    
+    return ek,Ve
 
+def plot_error(y_est,data):
+    x1 = data['area']
+    x2 = data['age']
+    
+    ek,Ve = calc_error(y_est,data)
+    
+    fig,ax1 = plt.subplots()
+    ax1.scatter(x1,ek)
+    fig,ax2 = plt.subplots()
+    ax2.scatter(x2,ek)
+    
+    print("Ve = ",Ve)
+
+if __name__ == '__main__':
+    N=0
+    estate = read_data(N)
+    
+    y_est = calc_eq(estate['area'],estate['age'],estate['price'])
+    
+    plot_error(y_est,estate)
 
 
 
